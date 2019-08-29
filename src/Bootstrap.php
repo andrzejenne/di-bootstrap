@@ -50,8 +50,23 @@ class Bootstrap
         if (null === static::$container) {
             static::boot($bindings);
         }
+        else {
+            if (count($bindings)) {
+                static::bootContainer(static::$container, $bindings);
+            }
+        }
 
         return static::$container;
+    }
+
+    /**
+     * @param ContainerInterface $container
+     * @param array $bindings
+     */
+    public static function setupContainer(ContainerInterface $container, array $bindings = []) {
+        static::$container = $container;
+
+        static::bootContainer($container, $bindings);
     }
 
     /**
@@ -64,9 +79,17 @@ class Bootstrap
     {
         require(static::getAutoloadPath());
 
-        $bindings = array_merge(static::getDefaultBindings(), $bindings);
-
         static::$container = static::createContainer();
+
+        static::bootContainer(static::$container, $bindings);
+    }
+
+    /**
+     * @param ContainerInterface $container
+     * @param array $bindings
+     */
+    protected static function bootContainer(ContainerInterface $container, array $bindings) {
+        $bindings = array_merge(static::getDefaultBindings(), $bindings);
 
         foreach ($bindings as $key => $value) {
             static::$container[$key] = $value;
