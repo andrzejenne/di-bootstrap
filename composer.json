@@ -1,0 +1,22 @@
+{
+    "name": "bigbit/di-bootstrap",
+    "description": "App DI Container bootstrapping",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andrzej Heczko",
+            "email": "andrzej.heczko@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "psr/container": "^1.0",
+
+        "php": "^7.2.0"
+    },
+    "suggest": {
+        "bigbit/smart-di": "^1.0.0",
+        "bigbit/oddin": "^1.0.0"
+    }
+}
