@@ -14,7 +14,7 @@ class InvalidContainerImplementationException extends \Exception
 {
     /**
      * InvalidContainerImplementationException constructor.
-     * @param $implementation
+     * @param mixed $implementation
      * @param int $code
      * @param Throwable|null $previous
      */

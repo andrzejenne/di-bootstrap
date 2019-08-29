@@ -23,7 +23,7 @@ class Bootstrap
     private static $containerClass = 'BigBIT\\SmartDI\\SmartContainer';
 
     /**
-     * @param $vendorPath
+     * @param string $vendorPath
      */
     public static function useVendorPath(string $vendorPath)
     {
@@ -62,23 +62,11 @@ class Bootstrap
      */
     protected static function boot(array $bindings)
     {
-        if (!file_exists(static::$autoloadPath)) {
-            throw new PathNotFoundException(static::$autoloadPath);
-        }
-
-        require(static::$autoloadPath);
-
-        if (!class_exists(static::$containerClass)) {
-            throw new ClassNotFoundException(static::$containerClass);
-        }
-
-        static::$container = new static::$containerClass();
-
-        if (!static::$container instanceof ContainerInterface) {
-            throw new InvalidContainerImplementationException(static::$container);
-        }
+        require(static::getAutoloadPath());
 
         $bindings = array_merge(static::getDefaultBindings(), $bindings);
+
+        static::$container = static::createContainer();
 
         foreach ($bindings as $key => $value) {
             static::$container[$key] = $value;
@@ -90,7 +78,7 @@ class Bootstrap
     /**
      * @return array
      */
-    private static function getDefaultBindings()
+    protected static function getDefaultBindings()
     {
         return [
         ];
@@ -98,9 +86,33 @@ class Bootstrap
 
     /**
      * @return string
+     * @throws PathNotFoundException
      */
     final static protected function getAutoloadPath()
     {
+        if (!file_exists(static::$autoloadPath)) {
+            throw new PathNotFoundException(static::$autoloadPath);
+        }
+
         return static::$autoloadPath;
+    }
+
+    /**
+     * @return mixed
+     * @throws ClassNotFoundException
+     * @throws InvalidContainerImplementationException
+     */
+    final private static function createContainer() {
+        if (!class_exists(static::$containerClass)) {
+            throw new ClassNotFoundException(static::$containerClass);
+        }
+
+        $container = new static::$containerClass();
+
+        if (!$container instanceof ContainerInterface) {
+            throw new InvalidContainerImplementationException(static::$container);
+        }
+
+        return $container;
     }
 }
