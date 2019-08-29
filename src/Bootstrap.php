@@ -75,7 +75,7 @@ class Bootstrap
      * @throws PathNotFoundException
      * @throws InvalidContainerImplementationException
      */
-    protected static function boot(array $bindings)
+    final protected static function boot(array $bindings)
     {
         require(static::getAutoloadPath());
 
