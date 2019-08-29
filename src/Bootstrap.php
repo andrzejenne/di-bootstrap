@@ -130,7 +130,7 @@ class Bootstrap
             throw new ClassNotFoundException(self::$containerClass);
         }
 
-        $container = new static::$containerClass();
+        $container = new self::$containerClass();
 
         if (!$container instanceof ContainerInterface) {
             throw new InvalidContainerImplementationException(static::$container);
