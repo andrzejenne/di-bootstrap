@@ -27,7 +27,7 @@ class Bootstrap
      */
     public static function useVendorPath(string $vendorPath)
     {
-        static::$autoloadPath = $vendorPath . DIRECTORY_SEPARATOR . 'autoload.php';
+        self::$autoloadPath = $vendorPath . DIRECTORY_SEPARATOR . 'autoload.php';
     }
 
     /**
@@ -35,7 +35,7 @@ class Bootstrap
      */
     public static function useContainerImplementation(string $containerClass)
     {
-        static::$containerClass = $containerClass;
+        self::$containerClass = $containerClass;
     }
 
     /**
@@ -113,11 +113,11 @@ class Bootstrap
      */
     final static protected function getAutoloadPath()
     {
-        if (!file_exists(static::$autoloadPath)) {
-            throw new PathNotFoundException(static::$autoloadPath);
+        if (!file_exists(self::$autoloadPath)) {
+            throw new PathNotFoundException(self::$autoloadPath);
         }
 
-        return static::$autoloadPath;
+        return self::$autoloadPath;
     }
 
     /**
@@ -126,8 +126,8 @@ class Bootstrap
      * @throws InvalidContainerImplementationException
      */
     final private static function createContainer() {
-        if (!class_exists(static::$containerClass)) {
-            throw new ClassNotFoundException(static::$containerClass);
+        if (!class_exists(self::$containerClass)) {
+            throw new ClassNotFoundException(self::$containerClass);
         }
 
         $container = new static::$containerClass();
