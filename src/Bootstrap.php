@@ -23,11 +23,28 @@ class Bootstrap
     private static $containerClass = 'BigBIT\\SmartDI\\SmartContainer';
 
     /**
+     * @param string $path
+     * @param string $vendorDir
+     */
+    public static function detectVendorPath(string $path = __DIR__, string $vendorDir = 'vendor')
+    {
+        while (
+            !file_exists(
+                static::getAutoloadPathIn($path . DIRECTORY_SEPARATOR . $vendorDir)
+            )
+        ) {
+            $path = dirname($path);
+        }
+
+        static::useVendorPath($path . DIRECTORY_SEPARATOR . $vendorDir);
+    }
+
+    /**
      * @param string $vendorPath
      */
     public static function useVendorPath(string $vendorPath)
     {
-        self::$autoloadPath = $vendorPath . DIRECTORY_SEPARATOR . 'autoload.php';
+        self::$autoloadPath = static::getAutoloadPathIn($vendorPath);
     }
 
     /**
@@ -137,5 +154,13 @@ class Bootstrap
         }
 
         return $container;
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    private static function getAutoloadPathIn(string $path) {
+        return $path . DIRECTORY_SEPARATOR . 'autoload.php';
     }
 }
