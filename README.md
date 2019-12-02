@@ -1,5 +1,5 @@
 # di-bootstrap
-App DI Container bootstrapping
+App DI Container bootstrapping with dependencies for PHP7.4
 
 ## Example
 ```php
