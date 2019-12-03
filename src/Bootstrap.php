@@ -2,9 +2,11 @@
 
 namespace BigBIT\DIBootstrap;
 
+use BigBIT\DIBootstrap\Exceptions\CannotGetContainerException;
 use BigBIT\DIBootstrap\Exceptions\ClassNotFoundException;
 use BigBIT\DIBootstrap\Exceptions\InvalidContainerImplementationException;
 use BigBIT\DIBootstrap\Exceptions\PathNotFoundException;
+use BigBIT\DIBootstrap\Exceptions\VendorPathNotFoundException;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -14,29 +16,37 @@ use Psr\Container\ContainerInterface;
 class Bootstrap
 {
     /** @var ContainerInterface */
-    protected static $container;
+    protected static ?ContainerInterface $container = null;
 
     /** @var string */
-    private static $autoloadPath = __DIR__ . '../../vendor/autoload.php';
+    private static string $autoloadPath = __DIR__ . '../../vendor/autoload.php';
 
     /** @var string */
-    private static $containerClass = 'BigBIT\\SmartDI\\SmartContainer';
+    private static string $containerClass = 'BigBIT\\SmartDI\\SmartContainer';
 
     /**
-     * @param string $path
+     * @param string $sourcePath
      * @param string $vendorDir
+     * @throws VendorPathNotFoundException
      */
-    public static function detectVendorPath(string $path = __DIR__, string $vendorDir = 'vendor')
+    public static function detectVendorPath(string $sourcePath = __DIR__, string $vendorDir = 'vendor')
     {
+        $path = $sourcePath;
+
         while (
             !file_exists(
-                static::getAutoloadPathIn($path . DIRECTORY_SEPARATOR . $vendorDir)
+                ($detectingVendorPath = static::getAutoloadPathIn($path . DIRECTORY_SEPARATOR . $vendorDir))
             )
         ) {
-            $path = dirname($path);
+            $currentPath = dirname($path);
+            if ($currentPath === $path) {
+                throw new VendorPathNotFoundException($sourcePath);
+            }
+
+            $path = $currentPath;
         }
 
-        static::useVendorPath($path . DIRECTORY_SEPARATOR . $vendorDir);
+        static::useVendorPath($detectingVendorPath);
     }
 
     /**
@@ -61,8 +71,9 @@ class Bootstrap
      * @throws ClassNotFoundException
      * @throws InvalidContainerImplementationException
      * @throws PathNotFoundException
+     * @throws CannotGetContainerException
      */
-    public static function getContainer(array $bindings = [])
+    public static function getContainer(array $bindings = []): ContainerInterface
     {
         if (null === static::$container) {
             static::boot($bindings);
@@ -71,6 +82,10 @@ class Bootstrap
             if (count($bindings)) {
                 static::bootContainer(static::$container, $bindings);
             }
+        }
+
+        if (!static::$container instanceof ContainerInterface) {
+            throw new CannotGetContainerException();
         }
 
         return static::$container;
