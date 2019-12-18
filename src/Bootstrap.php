@@ -111,9 +111,7 @@ class Bootstrap
     {
         require(static::getAutoloadPath());
 
-        static::$container = static::createContainer();
-
-        static::bootContainer(static::$container, $bindings);
+        static::bootContainer(static::createContainer(), $bindings);
     }
 
     /**
@@ -121,6 +119,8 @@ class Bootstrap
      * @param array $bindings
      */
     protected static function bootContainer(ContainerInterface $container, array $bindings) {
+        static::$container = $container;
+
         $bindings = array_merge(static::getDefaultBindings(), $bindings);
 
         foreach ($bindings as $key => $value) {
