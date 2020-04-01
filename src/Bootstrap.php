@@ -124,10 +124,8 @@ class Bootstrap
         $bindings = array_merge(static::getDefaultBindings(), $bindings);
 
         foreach ($bindings as $key => $value) {
-            static::$container[$key] = $value;
+            $container->set($key, $value);
         }
-
-        static::$container[ContainerInterface::class] = static::$container;
     }
 
     /**
